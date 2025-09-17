@@ -366,6 +366,17 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .item-image .item-emoji {
+      font-size: 48px;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+
+    .item-image img + div .item-emoji {
+      /* If image loads, subtly show emoji as watermark overlay */
+      opacity: 0.15;
+    }
+
     /* Desktop Menu Items */
     @media (min-width: 768px) {
       .item-image {
@@ -425,18 +436,7 @@
       color: var(--error-color);
     }
 
-    .nudge-label {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: var(--primary-color);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      z-index: 10;
-    }
+    
 
     /* Loading States */
     .loading-container {
@@ -574,6 +574,7 @@
 
     .slider {
       -webkit-appearance: none;
+      appearance: none;
       width: 100%;
       height: 6px;
       border-radius: 3px;
@@ -769,7 +770,92 @@
       <div class="subtitle">Choose your perfect meal</div>
     </div>
 
-    <!-- Consent Page -->
+    <!-- Demographics Page -->
+    <div class="page" id="demographicsPage">
+      <div class="questions-section">
+        <div class="question-group">
+          <div class="question-title">Tell us a bit about you</div>
+          <div style="display:grid; gap:12px;">
+            <label>
+              <div style="font-weight:600; margin-bottom:6px;">Age Range</div>
+              <select id="ageRange" class="textarea" style="min-height:44px;">
+                <option value="">Select…</option>
+                <option value="18-24">18-24</option>
+                <option value="25-34">25-34</option>
+                <option value="35-44">35-44</option>
+                <option value="45-54">45-54</option>
+                <option value="55+">55+</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </label>
+            <label>
+              <div style="font-weight:600; margin-bottom:6px;">Gender</div>
+              <select id="gender" class="textarea" style="min-height:44px;">
+                <option value="">Select…</option>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </label>
+          </div>
+          <button class="btn btn-primary" id="demographicsNextBtn" disabled>Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Math Quiz Page -->
+    <div class="page" id="quizPage">
+      <div class="questions-section">
+        <div class="question-group">
+          <div class="question-title">Quick math warm‑up (5 questions)</div>
+          <div id="quizContainer" style="text-align:center;">
+            <div id="quizPrompt" style="font-size:20px; font-weight:700; margin:10px 0;">Loading…</div>
+            <input id="quizAnswer" type="number" class="textarea" inputmode="numeric" style="max-width:220px; margin:0 auto; text-align:center;" placeholder="Your answer" />
+            <div style="display:flex; gap:8px; justify-content:center; margin-top:12px;">
+              <button class="btn btn-secondary" id="quizSkipBtn" style="max-width:160px;">Skip</button>
+              <button class="btn btn-primary" id="quizSubmitBtn" style="max-width:160px;">Submit</button>
+            </div>
+            <div id="quizProgress" style="margin-top:12px; color:var(--text-tertiary);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- Priming Page (shown only for priming arm) -->
+        <div class="page" id="primingPage">
+          <div class="questions-section">
+            <div class="question-group">
+              <div class="question-title">Before we begin…</div>
+              <div style="display:grid; gap:16px;">
+                <label>
+                  <div style="font-weight:600; margin-bottom:6px;">How often do you exercise?</div>
+                  <select id="exerciseFreq" class="textarea" style="min-height:44px;">
+                    <option value="">Select…</option>
+                    <option value="Never">Never</option>
+                    <option value="1-2 times/week">1-2 times/week</option>
+                    <option value="3-4 times/week">3-4 times/week</option>
+                    <option value="5+ times/week">5+ times/week</option>
+                  </select>
+                </label>
+                <label>
+                  <div style="font-weight:600; margin-bottom:6px;">What do you expect from your meal today?</div>
+                  <select id="mealExpectation" class="textarea" style="min-height:44px;">
+                    <option value="">Select…</option>
+                    <option value="Be healthy">Be healthy</option>
+                    <option value="Taste great">Taste great</option>
+                    <option value="Be filling">Be filling</option>
+                    <option value="Quick and light">Quick and light</option>
+                    <option value="High protein">High protein</option>
+                  </select>
+                </label>
+              </div>
+              <button class="btn btn-primary" id="primingNextBtn" disabled>Continue</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consent Page -->
     <div class="page active" id="consentPage">
       <div class="welcome-section">
         <div class="welcome-icon">🍽️</div>
@@ -791,23 +877,7 @@
       </div>
     </div>
 
-    <!-- Diet Preference Page -->
-    <div class="page" id="dietPage">
-      <div class="diet-selector">
-        <h2 class="section-title">What's your preference?</h2>
-        <div class="diet-options">
-          <div class="diet-option" data-diet="veg">
-            <span class="emoji">🥗</span>
-            <div class="title">Vegetarian</div>
-          </div>
-          <div class="diet-option" data-diet="nonveg">
-            <span class="emoji">🍖</span>
-            <div class="title">Non-Vegetarian</div>
-          </div>
-        </div>
-        <button class="btn btn-primary" id="continueToMenuBtn" disabled>Continue</button>
-      </div>
-    </div>
+
 
     <!-- Menu Page -->
     <div class="page" id="menuPage">
@@ -822,7 +892,7 @@
       </div>
     </div>
 
-    <!-- Questions Page -->
+  <!-- Questions Page (post-choice) -->
     <div class="page" id="questionsPage">
       <div class="selected-item-preview">
         <div class="preview-title">Your Selection:</div>
@@ -831,51 +901,18 @@
 
       <div class="questions-section">
         <div class="question-group">
-          <div class="question-title">How confident are you in your choice?</div>
-          <div class="slider-container">
-            <input type="range" min="1" max="7" value="4" class="slider" id="confidenceSlider">
-            <div class="slider-labels">
-              <span>Not confident</span>
-              <span>Very confident</span>
-            </div>
-            <div class="slider-value" id="confidenceValue">4</div>
+          <div class="question-title">Your details</div>
+          <div style="display:grid; gap:12px;">
+            <label>
+              <div style="font-weight:600; margin-bottom:6px;">Name</div>
+              <input id="participantName" class="textarea" type="text" placeholder="Your name" style="min-height:44px;" />
+            </label>
+            <label>
+              <div style="font-weight:600; margin-bottom:6px;">Phone</div>
+              <input id="participantPhone" class="textarea" type="tel" inputmode="tel" placeholder="Phone number" style="min-height:44px;" />
+            </label>
           </div>
         </div>
-
-        <div class="question-group">
-          <div class="question-title">This recommendation felt...</div>
-          
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 500;">AI-recommended</label>
-            <input type="range" min="1" max="7" value="4" class="slider" id="aiSlider">
-            <div class="slider-labels">
-              <span>Not at all</span>
-              <span>Very much</span>
-            </div>
-            <div class="slider-value" id="aiValue">4</div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Popular choice</label>
-            <input type="range" min="1" max="7" value="4" class="slider" id="popularSlider">
-            <div class="slider-labels">
-              <span>Not popular</span>
-              <span>Very popular</span>
-            </div>
-            <div class="slider-value" id="popularValue">4</div>
-          </div>
-
-          <div>
-            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Limited availability</label>
-            <input type="range" min="1" max="7" value="4" class="slider" id="scarceSlider">
-            <div class="slider-labels">
-              <span>Always available</span>
-              <span>Very limited</span>
-            </div>
-            <div class="slider-value" id="scarceValue">4</div>
-          </div>
-        </div>
-
         <div class="question-group">
           <div class="question-title">Why did you choose this meal?</div>
           <textarea class="textarea" id="reasonText" placeholder="Tell us what influenced your decision..."></textarea>
@@ -894,18 +931,26 @@
 
 <script>
 /* ===== CONFIG: replace with your Apps Script web app URL ===== */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMI-6MJwtZx021lAcELTsuBBPpsLMQsbmrQZmI_3PRFoLYlottHwkZez0X356u-wD7bA/exec"; // <-- REPLACE WITH YOUR ACTUAL WEB APP URL
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynwqvogtlpJ4gGa5v7Hu52sqb2T_jaEyvEAiXzG0M4sX1UDhTqKwCSkg2r3Fg4KTZssg/exec"; // <-- REPLACE WITH YOUR ACTUAL WEB APP URL
 
 /* ===== Dynamic menu loading from Google Sheets ===== */
-let MENUS = {
-  veg: [],
-  nonveg: []
-};
+let MENUS = [];
 
 let state = {
-  arm: null, // control/default/social/scarcity
+  arm: null, // control/info/primed
   participantId: null,
-  dietPreference: null,
+  ageRange: null,
+  gender: null,
+  primingArm: null, // 'primed' or 'control'
+  exerciseFreq: null,
+  mealExpectation: null,
+  // quiz state
+  quizQuestions: [],
+  quizIndex: 0,
+  quizCorrect: 0,
+  quizTotal: 5,
+  quizStartTs: null,
+  quizDurationSec: 0,
   selectedItem: null,
   selectedIndex: null,
   menuShown: null
@@ -921,27 +966,23 @@ function showPage(pageId) {
 async function loadMenusFromSheet() {
   try {
     console.log('🔄 Fetching menu data from Google Sheets...');
-    
     const response = await fetch(`${SCRIPT_URL}?action=getMenus`, {
       method: 'GET',
       mode: 'cors'
     });
-    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
     const data = await response.json();
-    
+    // Accept both shapes: {menus: []} or {menus: {menu: []}}
     if (data.status === 'success' && data.menus) {
-      MENUS = data.menus;
+      MENUS = Array.isArray(data.menus) ? data.menus : (data.menus.menu || []);
       console.log('✅ Menus loaded from Google Sheets:', MENUS);
       await new Promise(resolve => setTimeout(resolve, 800)); // Show loading for better UX
       return true;
     } else {
       throw new Error(data.message || 'Failed to load menus');
     }
-    
   } catch (error) {
     console.error('❌ Error loading menus from sheet:', error);
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -954,8 +995,13 @@ async function loadMenusFromSheet() {
 document.addEventListener('DOMContentLoaded', function() {
   initializeEventListeners();
   state.participantId = cryptoRandomId(8);
-  state.arm = randomArm();
+  // Allow arm override via URL param (?arm=control|info|primed)
+  const urlArm = getArmFromUrl();
+  state.arm = urlArm || randomArm();
+  // Derive priming from arm
+  state.primingArm = (state.arm === 'primed') ? 'primed' : 'control';
   console.log(`Participant ${state.participantId} assigned to ${state.arm} arm`);
+  console.log(`Priming arm: ${state.primingArm}`);
   
   // Add keyboard navigation for desktop
   addKeyboardNavigation();
@@ -1005,23 +1051,47 @@ function initializeEventListeners() {
   document.getElementById('consentCheckbox').addEventListener('click', handleConsentClick);
   document.getElementById('startBtn').addEventListener('click', handleStartExperiment);
 
-  // Diet preference page
-  document.querySelectorAll('.diet-option').forEach(option => {
-    option.addEventListener('click', handleDietSelection);
+  // Demographics page
+  const ageEl = document.getElementById('ageRange');
+  const genderEl = document.getElementById('gender');
+  const demoNext = document.getElementById('demographicsNextBtn');
+  const validateDemo = () => {
+    demoNext.disabled = !(ageEl.value && genderEl.value);
+  };
+  ageEl.addEventListener('change', validateDemo);
+  genderEl.addEventListener('change', validateDemo);
+  demoNext.addEventListener('click', () => {
+    state.ageRange = ageEl.value;
+    state.gender = genderEl.value;
+    startQuiz();
   });
-  document.getElementById('continueToMenuBtn').addEventListener('click', handleContinueToMenu);
+
+  // Quiz page
+  document.getElementById('quizSubmitBtn').addEventListener('click', submitQuizAnswer);
+  document.getElementById('quizSkipBtn').addEventListener('click', () => submitQuizAnswer(true));
+  document.getElementById('quizAnswer').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitQuizAnswer();
+  });
 
   // Menu page
   document.getElementById('selectItemBtn').addEventListener('click', handleItemSelection);
 
-  // Questions page - sliders
-  const sliders = ['confidenceSlider', 'aiSlider', 'popularSlider', 'scarceSlider'];
-  sliders.forEach(sliderId => {
-    const slider = document.getElementById(sliderId);
-    const valueDisplay = document.getElementById(sliderId.replace('Slider', 'Value'));
-    slider.addEventListener('input', () => {
-      valueDisplay.textContent = slider.value;
-    });
+  // Priming page
+  const primingNext = document.getElementById('primingNextBtn');
+  const exerciseEl = document.getElementById('exerciseFreq');
+  const mealExpEl = document.getElementById('mealExpectation');
+  const validatePriming = () => {
+    primingNext.disabled = !(exerciseEl.value && mealExpEl.value);
+  };
+  if (exerciseEl) exerciseEl.addEventListener('change', validatePriming);
+  if (mealExpEl) mealExpEl.addEventListener('change', validatePriming);
+  if (primingNext) primingNext.addEventListener('click', () => {
+    state.exerciseFreq = exerciseEl.value;
+    state.mealExpectation = mealExpEl.value;
+    // Proceed to menu
+    showPage('menuPage');
+    showMenuLoading();
+    loadMenusFromSheet().then(renderMenu);
   });
 
   document.getElementById('submitBtn').addEventListener('click', handleSubmitResponse);
@@ -1035,29 +1105,14 @@ function handleConsentClick() {
   startBtn.disabled = !checkbox.classList.contains('checked');
 }
 
+
 function handleStartExperiment() {
   if (!document.getElementById('consentCheckbox').classList.contains('checked')) return;
-  showPage('dietPage');
+  // Go to demographics first
+  showPage('demographicsPage');
 }
 
-function handleDietSelection(event) {
-  document.querySelectorAll('.diet-option').forEach(opt => opt.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  
-  state.dietPreference = event.currentTarget.dataset.diet;
-  document.getElementById('continueToMenuBtn').disabled = false;
-}
 
-async function handleContinueToMenu() {
-  if (!state.dietPreference) return;
-  
-  showPage('menuPage');
-  showMenuLoading();
-  
-  // Load menus and render
-  await loadMenusFromSheet();
-  renderMenu();
-}
 
 function showMenuLoading() {
   document.getElementById('menuLoading').style.display = 'flex';
@@ -1065,12 +1120,11 @@ function showMenuLoading() {
 }
 
 function renderMenu() {
-  const diet = state.dietPreference;
-  let menu = JSON.parse(JSON.stringify(MENUS[diet])); // deep copy
-  
+  let menu = JSON.parse(JSON.stringify(MENUS)); // deep copy
+
   const grid = document.getElementById('menuGrid');
   const loading = document.getElementById('menuLoading');
-  
+
   if (!menu || menu.length === 0) {
     loading.innerHTML = `
       <div style="color: var(--error-color);">
@@ -1081,15 +1135,15 @@ function renderMenu() {
     `;
     return;
   }
-  
+
   loading.style.display = 'none';
-  
+
   // Find target item for nudging (first healthy item)
-  const targetIndex = menu.findIndex(item => item.category === 'H');
-  state.menuShown = { diet, items: menu };
-  
+  const targetIndex = menu.findIndex(item => getCategory(item) === 'H');
+  state.menuShown = { items: menu };
+
   grid.innerHTML = '';
-  
+
   menu.forEach((item, index) => {
     const menuItem = createMenuItem(item, index, targetIndex);
     grid.appendChild(menuItem);
@@ -1111,23 +1165,23 @@ function createMenuItem(item, index, targetIndex) {
   div.className = 'menu-item';
   div.dataset.index = index;
   div.setAttribute('tabindex', '0'); // Make focusable for keyboard navigation
-  
+
   // Create gradient based on category
   const gradients = {
     'H': 'linear-gradient(135deg, #34C759, #30D158)', // Green for healthy
     'M': 'linear-gradient(135deg, #FF9500, #FF9F0A)', // Orange for moderate
     'I': 'linear-gradient(135deg, #FF3B30, #FF453A)'  // Red for indulgent
   };
-  
+
   const emojis = {
     'H': '🥗',
-    'M': '🍽️', 
+    'M': '🍽️',
     'I': '🍰'
   };
 
   const badgeClasses = {
     'H': 'healthy',
-    'M': 'moderate', 
+    'M': 'moderate',
     'I': 'indulgent'
   };
 
@@ -1136,21 +1190,55 @@ function createMenuItem(item, index, targetIndex) {
     'M': 'Moderate',
     'I': 'Indulgent'
   };
-  
+
+  // Nutrition facts HTML
+  const nutrition = item.nutrition || {};
+  const category = getCategory(item);
+  const useColoredCard = (state.arm === 'primed');
+  const neutralBg = 'linear-gradient(135deg, #9EA3AE, #C7CCD6)';
+  const showHealth = (state.arm === 'info' || state.arm === 'primed');
+  const healthPct = Number(nutrition.healthRating) || 0;
+  const healthBar = showHealth ? `
+    <div style="margin-top:10px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-tertiary); margin-bottom:4px;">
+        <span>Health</span>
+        <span>${healthPct}%</span>
+      </div>
+      <div style="height:8px; background:#e5e5ea; border-radius:6px; overflow:hidden;">
+        <div style="height:100%; width:${Math.max(0, Math.min(100, healthPct))}%; background:${category==='H'?'#34C759':(category==='M'?'#FF9500':'#FF3B30')};"></div>
+      </div>
+    </div>
+  ` : '';
+  const nutritionHtml = `
+    <div style="margin: 10px 0 0 0; font-size: 13px; color: var(--text-tertiary);">
+      <strong>Energy:</strong> ${nutrition.energy || '-'} KCal &nbsp;|
+      <strong>Protein:</strong> ${nutrition.protein || '-'}g &nbsp;|
+      <strong>Fat:</strong> ${nutrition.fat || '-'}g &nbsp;|
+      <strong>Carbs:</strong> ${nutrition.carbohydrates || '-'}g
+    </div>
+    ${healthBar}
+  `;
+
+  const bgStyle = useColoredCard ? (gradients[category] || gradients['M']) : neutralBg;
+  const hasImage = item.imageUrl && typeof item.imageUrl === 'string' && item.imageUrl.trim().length > 0;
+  const imageTag = hasImage ?
+    `<img src="${item.imageUrl}" alt="${item.title}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');" />` : '';
+
   div.innerHTML = `
-    <div class="item-image" style="background: ${gradients[item.category] || gradients['M']}">
-      ${emojis[item.category] || '🍽️'}
-      ${index === targetIndex && state.arm !== 'control' ? createNudgeLabel() : ''}
+    <div class="item-image" style="background: ${bgStyle}">
+      ${imageTag}
+      <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+        <span class="item-emoji">${emojis[category] || '🍽️'}</span>
+      </div>
     </div>
     <div class="item-content">
       <div class="item-title">${item.title}</div>
-      <div class="item-description">${item.desc}</div>
-      <div class="item-badges">
-        <span class="badge ${badgeClasses[item.category]}">${badgeTexts[item.category]}</span>
-      </div>
+      <div class="item-description">${item.desc || ''}</div>
+      ${nutritionHtml}
+      ${useColoredCard ? `<div class="item-badges"><span class="badge ${badgeClasses[category]}">${badgeTexts[category]}</span></div>` : ''}
     </div>
   `;
-  
+
   // Add click and keyboard event listeners
   div.addEventListener('click', () => selectMenuItem(div, index));
   div.addEventListener('keydown', (event) => {
@@ -1159,32 +1247,24 @@ function createMenuItem(item, index, targetIndex) {
       selectMenuItem(div, index);
     }
   });
-  
+
   // Auto-highlight default selection
   if (state.arm === 'default' && index === targetIndex) {
     div.style.border = '2px solid var(--primary-color)';
   }
-  
+
   return div;
 }
 
-function createNudgeLabel() {
-  const labels = {
-    'default': '✅ Recommended',
-    'social': '👥 Popular Choice',
-    'scarcity': '⏰ Limited Time'
-  };
-  
-  return `<div class="nudge-label">${labels[state.arm] || ''}</div>`;
-}
+// Recommendation badge removed per latest requirements.
 
 function selectMenuItem(element, index) {
   document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('selected'));
   element.classList.add('selected');
-  
+
   state.selectedIndex = index;
-  state.selectedItem = MENUS[state.dietPreference][index];
-  
+  state.selectedItem = MENUS[index];
+
   document.getElementById('selectItemBtn').disabled = false;
 }
 
@@ -1198,6 +1278,8 @@ function handleItemSelection() {
 function handleSubmitResponse() {
   const submitBtn = document.getElementById('submitBtn');
   const statusEl = document.getElementById('statusMessage');
+  const nameEl = document.getElementById('participantName');
+  const phoneEl = document.getElementById('participantPhone');
   
   // Disable button and show loading
   submitBtn.disabled = true;
@@ -1206,17 +1288,35 @@ function handleSubmitResponse() {
   statusEl.className = 'status-message';
   statusEl.textContent = 'Saving your response...';
   
+  // Basic phone normalization (digits only)
+  const rawPhone = (phoneEl?.value || '').trim();
+  const normalizedPhone = rawPhone.replace(/\D+/g, '');
+
+  // Optional: simple validation if phone provided
+  if (rawPhone && (normalizedPhone.length < 7 || normalizedPhone.length > 15)) {
+    statusEl.className = 'status-message status-error';
+    statusEl.textContent = 'Please enter a valid phone number (7-15 digits) or leave it blank.';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Response';
+    return;
+  }
+
   const payload = {
     participantId: state.participantId,
     arm: state.arm,
-    diet_pref: state.dietPreference,
+    priming_arm: state.primingArm,
+    age_range: state.ageRange,
+    gender: state.gender,
+    quiz_correct: state.quizCorrect,
+    quiz_total: state.quizTotal,
+    quiz_duration_sec: state.quizDurationSec,
     chosen_item: state.selectedItem.title,
     chosen_item_index: state.selectedIndex,
-    confidence: document.getElementById('confidenceSlider').value,
-    perceived_ai: document.getElementById('aiSlider').value,
-    perceived_popular: document.getElementById('popularSlider').value,
-    perceived_scarce: document.getElementById('scarceSlider').value,
-    reason: document.getElementById('reasonText').value
+    exercise_freq: state.exerciseFreq,
+    meal_expectation: state.mealExpectation,
+    reason: document.getElementById('reasonText').value,
+    name: nameEl?.value || '',
+    phone: normalizedPhone || ''
   };
 
   // Submit data
@@ -1271,7 +1371,7 @@ function handleSubmitResponse() {
 
 // Utility functions
 function randomArm() {
-  const arms = ["control", "default", "social", "scarcity"];
+  const arms = ["control", "info", "primed"];
   return arms[Math.floor(Math.random() * arms.length)];
 }
 
@@ -1280,9 +1380,80 @@ function cryptoRandomId(len) {
   crypto.getRandomValues(arr);
   return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, len);
 }
-</script>
-</body>
-</html>
+
+// Helpers
+function getArmFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const arm = (params.get('arm') || '').toLowerCase();
+  const valid = ['control', 'info', 'primed'];
+  return valid.includes(arm) ? arm : null;
+}
+
+// Priming is derived from arm; no separate priming URL or randomization
+
+function getCategory(item) {
+  const raw = (item.category || '').toUpperCase();
+  if (raw === 'H' || raw === 'M' || raw === 'I') return raw;
+  const hr = Number(item?.nutrition?.healthRating);
+  if (!isNaN(hr)) {
+    if (hr >= 75) return 'H';
+    if (hr >= 50) return 'M';
+    return 'I';
+  }
+  return 'M';
+}
+
+// Quiz generation and flow
+function startQuiz() {
+  // Prepare questions
+  state.quizQuestions = Array.from({ length: state.quizTotal }, () => randomAddition());
+  state.quizIndex = 0;
+  state.quizCorrect = 0;
+  state.quizStartTs = Date.now();
+  showPage('quizPage');
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const { a, b } = state.quizQuestions[state.quizIndex];
+  document.getElementById('quizPrompt').textContent = `${a} + ${b} = ?`;
+  const ans = document.getElementById('quizAnswer');
+  ans.value = '';
+  ans.focus();
+  document.getElementById('quizProgress').textContent = `Question ${state.quizIndex + 1} of ${state.quizTotal}`;
+}
+
+function submitQuizAnswer(skip = false) {
+  const q = state.quizQuestions[state.quizIndex];
+  const userVal = Number(document.getElementById('quizAnswer').value);
+  const correct = (q.a + q.b);
+  if (!skip && userVal === correct) state.quizCorrect += 1;
+  state.quizIndex += 1;
+  if (state.quizIndex >= state.quizTotal) {
+    finishQuiz();
+  } else {
+    renderQuizQuestion();
+  }
+}
+
+function finishQuiz() {
+  const elapsedMs = Date.now() - state.quizStartTs;
+  state.quizDurationSec = Math.round(elapsedMs / 1000);
+  // Priming branch -> then menu
+  if (state.primingArm === 'primed') {
+    showPage('primingPage');
+  } else {
+    showPage('menuPage');
+    showMenuLoading();
+    loadMenusFromSheet().then(renderMenu);
+  }
+}
+
+function randomAddition() {
+  const a = 100 + Math.floor(Math.random() * 900);
+  const b = 100 + Math.floor(Math.random() * 900);
+  return { a, b };
+}
 </script>
 </body>
 </html>

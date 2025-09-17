@@ -6,7 +6,7 @@
 // Configuration - IMPORTANT: Replace with your actual Google Sheet ID
 // To find your Sheet ID: Open your Google Sheet and look at the URL
 // https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit#gid=0
-const SHEET_ID = 'REPLACE_WITH_YOUR_ACTUAL_SHEET_ID'; // ← Change this!
+const SHEET_ID = '1kNHKwEokz3ucpQGIvA55mYWa31URqLELif70XzPl17E'; // ← Change this!
 const SHEET_NAME = 'Responses'; // Name of the sheet tab for responses
 const MENU_SHEET_NAME = 'Menus'; // Name of the sheet tab for menu items
 
@@ -139,42 +139,43 @@ function getMenusFromSheet() {
     if (!data || data.length < 2) {
       console.log('Menu sheet is empty - please add your menu data to the Google Sheet');
       // Return empty menus structure
-      return { veg: [], nonveg: [] };
+      return { menu: [] };
     }
     
     const headers = data[0];
     const rows = data.slice(1);
     
     // Find required column indices
-    const dietTypeIndex = headers.indexOf('Diet Type');
     const titleIndex = headers.indexOf('Title');
-    const descIndex = headers.indexOf('Description');
+    const energyIndex = headers.indexOf('Energy (KCal)');
+    const proteinIndex = headers.indexOf('Protein (g)');
+    const fatIndex = headers.indexOf('Fat (g)');
+    const carbIndex = headers.indexOf('Carbohydrates (g)');
+    const healthIndex = headers.indexOf('Health Rating (%)');
+  const descIndex = headers.indexOf('Description');
+  const imageIndex = headers.indexOf('ImageURL');
     const categoryIndex = headers.indexOf('Category');
     
-    if (dietTypeIndex === -1 || titleIndex === -1 || descIndex === -1 || categoryIndex === -1) {
-      throw new Error('Menu sheet is missing required columns: Diet Type, Title, Description, Category');
+    if (titleIndex === -1) {
+      throw new Error('Menu sheet is missing required columns such as Title, Energy (KCal), Protein (g), Fat (g), Carbohydrates (g), Health Rating (%), Description, Category');
     }
     
-    // Group menu items by diet type
-    const menus = {
-      veg: [],
-      nonveg: []
-    };
-    
-    rows.forEach(row => {
-      const dietType = row[dietTypeIndex];
-      const title = row[titleIndex];
-      const desc = row[descIndex];
-      const category = row[categoryIndex];
-      
-      if (title && desc && category && (dietType === 'veg' || dietType === 'nonveg')) {
-        menus[dietType].push({
-          title: title,
-          desc: desc,
-          category: category
-        });
-      }
-    });
+    // Build menu array
+    const menus = rows.map(row => {
+      return {
+        title: row[titleIndex],
+        nutrition: {
+          energy: row[energyIndex],
+          protein: row[proteinIndex],
+          fat: row[fatIndex],
+          carbohydrates: row[carbIndex],
+          healthRating: row[healthIndex]
+        },
+        desc: row[descIndex],
+        category: row[categoryIndex],
+        imageUrl: imageIndex !== -1 ? row[imageIndex] : ''
+      };
+    }).filter(item => item.title);
     
     console.log('Successfully loaded menus:', menus);
     return menus;
@@ -199,7 +200,7 @@ function createMenuSheet() {
     const sheet = spreadsheet.insertSheet(MENU_SHEET_NAME);
     
     // Add headers
-    const headers = ['Diet Type', 'Title', 'Description', 'Category'];
+  const headers = ['Title', 'Energy (KCal)','Protein (g)','Fat (g)','Carbohydrates (g)', 'Health Rating (%)', 'Description', 'Category', 'ImageURL'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
     
@@ -233,14 +234,19 @@ function saveToSheet(data) {
         'Timestamp',
         'Participant ID',
         'Experimental Arm',
-        'Diet Preference',
+        'Priming Arm',
+        'Age Range',
+        'Gender',
+        'Quiz Correct',
+        'Quiz Total',
+        'Quiz Duration (sec)',
         'Chosen Item',
         'Chosen Item Index',
-        'Confidence Level',
-        'Perceived AI',
-        'Perceived Popular',
-        'Perceived Scarce',
-        'Reason'
+        'Exercise Frequency',
+        'Meal Expectation',
+        'Reason',
+        'Name',
+        'Phone'
       ];
       
       newSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -255,14 +261,19 @@ function saveToSheet(data) {
       new Date(), // Timestamp
       data.participantId || '',
       data.arm || '',
-      data.diet_pref || '',
+      data.priming_arm || '',
+      data.age_range || '',
+      data.gender || '',
+      data.quiz_correct || '',
+      data.quiz_total || '',
+      data.quiz_duration_sec || '',
       data.chosen_item || '',
       data.chosen_item_index || '',
-      data.confidence || '',
-      data.perceived_ai || '',
-      data.perceived_popular || '',
-      data.perceived_scarce || '',
-      data.reason || ''
+      data.exercise_freq || '',
+      data.meal_expectation || '',
+      data.reason || '',
+      data.name || '',
+      data.phone || ''
     ];
     
     // Add the row to the sheet
@@ -294,14 +305,19 @@ function testSetup() {
     const testData = {
       participantId: 'test123',
       arm: 'control',
-      diet_pref: 'veg',
+      priming_arm: 'primed',
+      age_range: '25-34',
+      gender: 'Prefer not to say',
+      quiz_correct: 4,
+      quiz_total: 5,
+      quiz_duration_sec: 42,
       chosen_item: 'Test Item',
       chosen_item_index: 0,
-      confidence: '5',
-      perceived_ai: '3',
-      perceived_popular: '4',
-      perceived_scarce: '2',
-      reason: 'Testing the setup'
+      exercise_freq: '3-4 times/week',
+      meal_expectation: 'Be healthy',
+      reason: 'Testing the setup',
+      name: 'Test User',
+      phone: '1234567890'
     };
     
     const result = saveToSheet(testData);
@@ -349,14 +365,19 @@ function initializeSheet() {
       'Timestamp',
       'Participant ID',
       'Experimental Arm',
-      'Diet Preference',
+      'Priming Arm',
+      'Age Range',
+      'Gender',
+      'Quiz Correct',
+      'Quiz Total',
+      'Quiz Duration (sec)',
       'Chosen Item',
       'Chosen Item Index',
-      'Confidence Level',
-      'Perceived AI',
-      'Perceived Popular',
-      'Perceived Scarce',
-      'Reason'
+      'Exercise Frequency',
+      'Meal Expectation',
+      'Reason',
+      'Name',
+      'Phone'
     ];
     
     responseSheet.getRange(1, 1, 1, responseHeaders.length).setValues([responseHeaders]);
