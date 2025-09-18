@@ -937,6 +937,14 @@
 /* ===== CONFIG: replace with your Apps Script web app URL ===== */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynwqvogtlpJ4gGa5v7Hu52sqb2T_jaEyvEAiXzG0M4sX1UDhTqKwCSkg2r3Fg4KTZssg/exec"; // <-- REPLACE WITH YOUR ACTUAL WEB APP URL
 
+/* ===== Arm assignment weights (tune probabilities here) ===== */
+// Set relative weights for each arm. Zero excludes an arm from random assignment.
+// Examples:
+//  - 70% info, 30% primed: { control: 0, info: 7, primed: 3 }
+//  - 20% control, 40% info, 40% primed: { control: 2, info: 4, primed: 4 }
+// Current default excludes control and splits equally between info and primed.
+const ARM_WEIGHTS = { control: 0.5, info: 1, primed: 2 };
+
 /* ===== Dynamic menu loading from Google Sheets ===== */
 let MENUS = [];
 
@@ -1390,9 +1398,20 @@ function handleSubmitResponse() {
 
 // Utility functions
 function randomArm() {
-  // const arms = ["control", "info", "primed"];
-  const arms = ["info", "primed"];
-  return arms[Math.floor(Math.random() * arms.length)];
+  // Build weighted list from ARM_WEIGHTS
+  const entries = Object.entries(ARM_WEIGHTS).filter(([, w]) => w > 0);
+  if (entries.length === 0) {
+    // Fallback to equal probability among all three if misconfigured
+    const fallback = ["control", "info", "primed"]; 
+    return fallback[Math.floor(Math.random() * fallback.length)];
+  }
+  const total = entries.reduce((sum, [, w]) => sum + w, 0);
+  let r = Math.random() * total;
+  for (const [arm, weight] of entries) {
+    if ((r -= weight) <= 0) return arm;
+  }
+  // Safety fallback
+  return entries[entries.length - 1][0];
 }
 
 function cryptoRandomId(len) {
