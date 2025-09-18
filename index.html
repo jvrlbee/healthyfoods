@@ -767,7 +767,8 @@
   <div class="app">
     <div class="header">
       <h1>FoodEats</h1>
-      <div class="subtitle">Choose your perfect meal</div>
+      <div class="subtitle">Choose your preferred meal <span id="participantIdSpan" style="display:none; margin-left:8px; color: var(--text-tertiary); font-size: 14px;"></span></div>
+      
     </div>
 
     <!-- Demographics Page -->
@@ -928,7 +929,7 @@
     </div>
 
     <div class="footer-info">
-      <strong></strong> Your participation helps advance research in behavioral science.
+      <strong></strong> Your participation helps advance research in behavioral science. Nutritional values are suggestive. Actual nutritional values may vary based on preparation and ingredients.
     </div>
   </div>
 
@@ -998,6 +999,12 @@ async function loadMenusFromSheet() {
 document.addEventListener('DOMContentLoaded', function() {
   initializeEventListeners();
   state.participantId = cryptoRandomId(8);
+  // Show participant ID in header when available
+  const pidSpan = document.getElementById('participantIdSpan');
+  if (pidSpan && state.participantId) {
+    pidSpan.textContent = `• ID: ${state.participantId}`;
+    pidSpan.style.display = 'inline';
+  }
   // Allow arm override via URL param (?arm=control|info|primed)
   const urlArm = getArmFromUrl();
   state.arm = urlArm || randomArm();
@@ -1123,12 +1130,11 @@ function showMenuLoading() {
 }
 
 function renderMenu() {
-  let menu = JSON.parse(JSON.stringify(MENUS)); // deep copy
-
+  // Work off the original MENUS; we'll shuffle a separate index order for display
   const grid = document.getElementById('menuGrid');
   const loading = document.getElementById('menuLoading');
 
-  if (!menu || menu.length === 0) {
+  if (!MENUS || MENUS.length === 0) {
     loading.innerHTML = `
       <div style="color: var(--error-color);">
         <div style="font-size: 32px; margin-bottom: 16px;">😔</div>
@@ -1141,14 +1147,24 @@ function renderMenu() {
 
   loading.style.display = 'none';
 
-  // Find target item for nudging (first healthy item)
-  const targetIndex = menu.findIndex(item => getCategory(item) === 'H');
-  state.menuShown = { items: menu };
+  // Find target item for nudging (first healthy item) in the original order
+  const targetIndex = MENUS.findIndex(item => getCategory(item) === 'H');
+
+  // Build a shuffled display order of original indices
+  const order = Array.from({ length: MENUS.length }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+
+  // Track what was shown and in what order (for debugging/analytics if needed)
+  state.menuShown = { order: order.slice(), items: order.map(i => MENUS[i]) };
 
   grid.innerHTML = '';
 
-  menu.forEach((item, index) => {
-    const menuItem = createMenuItem(item, index, targetIndex);
+  order.forEach((origIndex) => {
+    const item = MENUS[origIndex];
+    const menuItem = createMenuItem(item, origIndex, targetIndex);
     grid.appendChild(menuItem);
   });
 
@@ -1197,9 +1213,9 @@ function createMenuItem(item, index, targetIndex) {
   // Nutrition facts HTML
   const nutrition = item.nutrition || {};
   const category = getCategory(item);
-  const useColoredCard = (state.arm === 'primed');
+  const useColoredCard = (state.arm === 'info');
   const neutralBg = 'linear-gradient(135deg, #9EA3AE, #C7CCD6)';
-  const showHealth = (state.arm === 'info' || state.arm === 'primed');
+  const showHealth = (state.arm === 'info');
   const healthPct = Number(nutrition.healthRating) || 0;
   const healthBar = showHealth ? `
     <div style="margin-top:10px;">
@@ -1296,9 +1312,9 @@ function handleSubmitResponse() {
   const normalizedPhone = rawPhone.replace(/\D+/g, '');
 
   // Optional: simple validation if phone provided
-  if (rawPhone && (normalizedPhone.length < 7 || normalizedPhone.length > 15)) {
+  if (rawPhone && (normalizedPhone.length < 7 || normalizedPhone.length > 12)) {
     statusEl.className = 'status-message status-error';
-    statusEl.textContent = 'Please enter a valid phone number (7-15 digits) or leave it blank.';
+    statusEl.textContent = 'Please enter a valid phone number or leave it blank.';
     submitBtn.disabled = false;
     submitBtn.textContent = 'Submit Response';
     return;
@@ -1332,7 +1348,7 @@ function handleSubmitResponse() {
   })
   .then(() => {
     statusEl.className = 'status-message status-success';
-    statusEl.textContent = '🎉 Thank you! Your response has been recorded successfully.';
+    statusEl.textContent = `🎉 Thank you! Your response has been recorded successfully. Your ID: ${state.participantId}`;
     submitBtn.textContent = 'Response Submitted';
     
     // Hide other content and show success
@@ -1356,7 +1372,7 @@ function handleSubmitResponse() {
     .then(res => {
       if (res.status === "success") {
         statusEl.className = 'status-message status-success';
-        statusEl.textContent = '🎉 Thank you! Your response has been recorded successfully.';
+        statusEl.textContent = `🎉 Thank you! Your response has been recorded successfully. Your ID: ${state.participantId}`;
         submitBtn.textContent = 'Response Submitted';
       } else {
         throw new Error(res.message || "Submission failed");
